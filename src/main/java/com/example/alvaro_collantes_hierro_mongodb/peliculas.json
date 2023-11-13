@@ -1,0 +1,22 @@
+db.peliculas.insertMany (
+[
+  {
+    "titulo" : "Harry Potter",
+    "genero" : "Magia",
+    "cine" : "Manhatan",
+    "protagonista" : "Daniel Radcliffe"
+  },
+  {
+    titulo" : "El señor de los anillos",
+    "genero" : "Epica",
+    "cine" : "Broadway",
+    "protagonista" : "Vigo Mortesen"
+  },
+  {
+    "titulo" : "Cristal",
+    "genero" : "Superheroes",
+    "cine" : "Cines Yelmo",
+    "protagonista" : "Morgar Freeman"
+  }
+]
+)
