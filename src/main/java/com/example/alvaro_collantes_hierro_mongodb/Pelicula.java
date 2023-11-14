@@ -68,5 +68,8 @@ public class Pelicula {
         this.protagonista = protagonista;
     }
 
-
+    @Override
+    public String toString() {
+        return titulo;
+    }
 }

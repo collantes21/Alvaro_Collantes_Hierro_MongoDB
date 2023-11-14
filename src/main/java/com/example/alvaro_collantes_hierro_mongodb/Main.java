@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Main extends Application {
     @Override
@@ -19,5 +20,14 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch();
+
+        PeliculasDAO peli=new PeliculasDAO();
+        peli.conectarse();
+        List<Pelicula>peliculas=peli.cargarPelis();
+
+        for (int i=0; i< peliculas.size(); i ++){
+            System.out.println(peliculas.get(i).getTitulo());
+        }
+
     }
 }

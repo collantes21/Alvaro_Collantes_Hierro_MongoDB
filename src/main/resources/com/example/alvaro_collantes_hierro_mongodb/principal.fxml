@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0" prefWidth="564.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.alvaro_collantes_hierro_mongodb.MainController">
    <children>
       <Text layoutX="72.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Titulo" />
@@ -23,12 +22,12 @@
       <Button fx:id="btnGuardar" layoutX="362.0" layoutY="286.0" mnemonicParsing="false" onAction="#guardarPeli" text="Guardar" />
       <Button fx:id="btnActualizar" layoutX="176.0" layoutY="286.0" mnemonicParsing="false" onAction="#actualizarPelis" onMouseClicked="#actualizarPelis" text="Actualizar" />
       <Button fx:id="btnModificar" layoutX="268.0" layoutY="286.0" mnemonicParsing="false" onAction="#modificarPeli" text="Modifcar" />
-      <TableView fx:id="tablaPelis" layoutX="5.0" layoutY="330.0" prefHeight="200.0" prefWidth="550.0">
+      <TableView fx:id="tablaPelis" layoutX="5.0" layoutY="330.0" prefHeight="200.0" onMouseClicked="#cargarDatos" prefWidth="550.0">
         <columns>
-          <TableColumn prefWidth="115.0" text="Titulo" />
-          <TableColumn prefWidth="129.0" text="Genero" />
-            <TableColumn prefWidth="134.0" text="Cine" />
-            <TableColumn prefWidth="171.0" text="Protagonista" />
+          <TableColumn fx:id="col_titulo" prefWidth="115.0" text="Titulo" />
+          <TableColumn fx:id="col_genero" prefWidth="129.0" text="Genero" />
+            <TableColumn fx:id="col_cine" prefWidth="134.0" text="Cine" />
+            <TableColumn fx:id="col_protagonista" prefWidth="171.0" text="Protagonista" />
         </columns>
       </TableView>
    </children>
