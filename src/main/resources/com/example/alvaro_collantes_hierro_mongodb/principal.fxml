@@ -17,12 +17,10 @@
       <TextField fx:id="txtProtagonista" layoutX="156.0" layoutY="226.0" prefHeight="25.0" prefWidth="224.0" />
       <TextField fx:id="txtCine" layoutX="156.0" layoutY="167.0" prefHeight="25.0" prefWidth="224.0" />
       <TextField fx:id="txtGenero" layoutX="156.0" layoutY="112.0" prefHeight="25.0" prefWidth="224.0" />
-      <Button fx:id="btnNuevo" layoutX="22.0" layoutY="286.0" mnemonicParsing="false" onAction="#camposVacios" text="Nueva" />
-      <Button fx:id="btnBorrar" layoutX="102.0" layoutY="286.0" mnemonicParsing="false" onAction="#borrarPeli" text="Borrar" />
-      <Button fx:id="btnGuardar" layoutX="362.0" layoutY="286.0" mnemonicParsing="false" onAction="#guardarPeli" text="Guardar" />
-      <Button fx:id="btnActualizar" layoutX="176.0" layoutY="286.0" mnemonicParsing="false" onAction="#actualizarPelis" onMouseClicked="#actualizarPelis" text="Actualizar" />
-      <Button fx:id="btnModificar" layoutX="268.0" layoutY="286.0" mnemonicParsing="false" onAction="#modificarPeli" text="Modifcar" />
-      <TableView fx:id="tablaPelis" layoutX="5.0" layoutY="330.0" prefHeight="200.0" onMouseClicked="#cargarDatos" prefWidth="550.0">
+      <Button fx:id="btnBorrar" layoutX="145.0" layoutY="286.0" mnemonicParsing="false" onAction="#borrarPeli" text="Borrar" />
+      <Button fx:id="btnGuardar" layoutX="399.0" layoutY="286.0" mnemonicParsing="false" onAction="#guardarPeli" text="Guardar" />
+      <Button fx:id="btnModificar" layoutX="227.0" layoutY="286.0" mnemonicParsing="false" onAction="#modificarPeli" text="Modifcar" />
+      <TableView fx:id="tablaPelis" layoutX="5.0" layoutY="330.0" onMouseClicked="#cargarDatos" prefHeight="200.0" prefWidth="550.0">
         <columns>
           <TableColumn fx:id="col_titulo" prefWidth="115.0" text="Titulo" />
           <TableColumn fx:id="col_genero" prefWidth="129.0" text="Genero" />
@@ -30,5 +28,7 @@
             <TableColumn fx:id="col_protagonista" prefWidth="171.0" text="Protagonista" />
         </columns>
       </TableView>
+      <Button fx:id="btnNueva" layoutX="320.0" layoutY="286.0" mnemonicParsing="false" onAction="#nuevaPeli" text="Nueva" />
+      <Button fx:id="btnLimpiar" layoutX="56.0" layoutY="286.0" mnemonicParsing="false" onAction="#limpiarCampos" text="Limpiar" />
    </children>
 </AnchorPane>

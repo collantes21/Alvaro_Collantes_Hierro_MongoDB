@@ -4,19 +4,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import javax.swing.*;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MainController {
+public class MainController implements Initializable {
 
-    @FXML
-    private Button btnActualizar;
 
     @FXML
     private Button btnBorrar;
@@ -26,9 +26,11 @@ public class MainController {
 
     @FXML
     private Button btnModificar;
+    @FXML
+    private Button btnNueva;
 
     @FXML
-    private Button btnNuevo;
+    private Button btnLimpiar;
 
     @FXML
     private TableView<Pelicula> tablaPelis;
@@ -57,14 +59,10 @@ public class MainController {
     @FXML
     private TableColumn col_titulo;
 
-
     PeliculasDAO pelicula=new PeliculasDAO();
 
 
-    @FXML
-    void actualizarPelis(ActionEvent event) {
-
-
+    private void actualizarTableView(){
         vaciarCampos();
         List<Pelicula> peliculas = pelicula.cargarPelis();
         ObservableList<Pelicula> data = FXCollections.observableArrayList(peliculas);
@@ -77,12 +75,10 @@ public class MainController {
         this.col_cine.setCellValueFactory(new PropertyValueFactory("cine"));
         this.col_protagonista.setCellValueFactory(new PropertyValueFactory("protagonista"));
 
-
     }
 
     @FXML
     void borrarPeli(ActionEvent event) {
-
 
         String titulo=txtTitulo.getText();
         String genero=txtGenero.getText();
@@ -100,45 +96,50 @@ public class MainController {
         if (confirmado) {
             // Borrar la película solo si el usuario confirma
             pelicula.borrarPelicula(borrarPelicula);
-            // Opcional: Mostrar una alerta de éxito después de borrar
-            AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Película borrada con éxito");
             vaciarCampos();
         } else {
             // Opcional: Mostrar una alerta de cancelación si el usuario cancela
             AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Cancelación", "Borrado cancelado por el usuario");
         }
-    }
 
-    @FXML
-    void camposVacios(ActionEvent event) {
-
-        txtTitulo.setText("");
-        txtGenero.setText("");
-        txtCine.setText("");
-        txtProtagonista.setText("");
+        vaciarCampos();
+        actualizarTableView();
+        configBotones();
 
     }
 
     @FXML
     void guardarPeli(ActionEvent event) {
 
-
         String titulo=txtTitulo.getText();
         String genero=txtGenero.getText();
         String cine=txtCine.getText();
         String protagonista=txtProtagonista.getText();
 
+        if (titulo.equals("")){
+
+            //Otra forma de arrojar mensajes.
+            JOptionPane.showMessageDialog(null, "El campo titulo debe estar relleno.");
+            vaciarCampos();
+            configBotones();
+
+        } else {
+
             Pelicula nuevaPelicula = new Pelicula();
+
             nuevaPelicula.setTitulo(titulo);
             nuevaPelicula.setGenero(genero);
             nuevaPelicula.setCine(cine);
             nuevaPelicula.setProtagonista(protagonista);
 
-            pelicula.conectarse();
             pelicula.insertarPelicula(nuevaPelicula);
 
-    }
+            vaciarCampos();
+            actualizarTableView();
+            configBotones();
+        }
 
+    }
 
     @FXML
     void modificarPeli(ActionEvent event) {
@@ -148,15 +149,52 @@ public class MainController {
         String cine=txtCine.getText();
         String protagonista=txtProtagonista.getText();
 
+        Pelicula modificarPelicula = new Pelicula();
+        modificarPelicula.setTitulo(titulo);
+        modificarPelicula.setGenero(genero);
+        modificarPelicula.setCine(cine);
+        modificarPelicula.setProtagonista(protagonista);
+
+        pelicula.modificarPelicula(modificarPelicula);
+
+        vaciarCampos();
+        actualizarTableView();
+        configBotones();
+
+    }
+    @FXML
+    void nuevaPeli(ActionEvent event) {
+
+        vaciarCampos();
+        btnGuardar.setDisable(false);
+        btnBorrar.setDisable(true);
+        btnModificar.setDisable(true);
+        tablaPelis.setDisable(true);
+        txtTitulo.setDisable(false);
+        txtGenero.setDisable(false);
+        txtCine.setDisable(false);
+        txtProtagonista.setDisable(false);
+        actualizarTableView();
     }
 
-    private void vaciarCampos() {
+
+    public void vaciarCampos() {
         txtTitulo.setText("");
         txtGenero.setText("");
         txtCine.setText("");
         txtProtagonista.setText("");
 
     }
+
+    @FXML
+    void limpiarCampos(ActionEvent event) {
+
+        vaciarCampos();
+        actualizarTableView();
+        configBotones();
+
+    }
+
     public void cargarDatos(){
 
         Pelicula cargarPelicula= tablaPelis.getSelectionModel().getSelectedItem();
@@ -166,32 +204,47 @@ public class MainController {
         txtCine.setText(cargarPelicula.getCine());
         txtProtagonista.setText(cargarPelicula.getProtagonista());
 
+        btnGuardar.setDisable(true);
+        btnBorrar.setDisable(false);
+        btnModificar.setDisable(false);
+        txtTitulo.setDisable(false);
+        txtGenero.setDisable(false);
+        txtCine.setDisable(false);
+        txtProtagonista.setDisable(false);
+
     }
 
-    private void fijarColumnasTabla() {
-        Field[] fields = Pelicula.class.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.getName().equals("id"))
-                continue;
+    private void configBotones(){
 
-            TableColumn<Pelicula, String> column = new TableColumn<>("[" + field.getName() + "]");
-            column.setCellValueFactory(new PropertyValueFactory<>(field.getName()));
-            tablaPelis.getColumns().add(column);
-        }
+        btnGuardar.setDisable(true);
+        btnBorrar.setDisable(true);
+        btnModificar.setDisable(true);
+        tablaPelis.setDisable(false);
+        btnNueva.setDisable(false);
+        txtTitulo.setDisable(true);
+        txtGenero.setDisable(true);
+        txtCine.setDisable(true);
+        txtProtagonista.setDisable(true);
 
-        tablaPelis.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
-//    @Override
-//    public void initialize(URL url, ResourceBundle resourceBundle){
-//
-//        ConexionBBDD.conectar();
-//
-//        List<Pelicula> peliculas=pelicula.cargarPelis();
-//        for (Pelicula peli:peliculas){
-//            System.out.println(peli);
-//        }
-//        tablaPelis.setItems(FXCollections.observableArrayList(peliculas).sorted());
-//
-//    }
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle){
+
+
+        List<Pelicula> peliculas = pelicula.cargarPelis();
+        ObservableList<Pelicula> data = FXCollections.observableArrayList(peliculas);
+
+        // Agregar datos a la TableView
+        tablaPelis.setItems(data);
+
+        this.col_titulo.setCellValueFactory(new PropertyValueFactory("titulo"));
+        this.col_genero.setCellValueFactory(new PropertyValueFactory("genero"));
+        this.col_cine.setCellValueFactory(new PropertyValueFactory("cine"));
+        this.col_protagonista.setCellValueFactory(new PropertyValueFactory("protagonista"));
+
+        configBotones();
+
+
+    }
 
 }

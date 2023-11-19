@@ -5,6 +5,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,7 +24,6 @@ public class PeliculasDAO {
     private MongoDatabase db;
     private static final String database_name="peliculas";
 
-    Pelicula pelicula=new Pelicula();
 
     public void conectarse(){
 
@@ -31,43 +31,65 @@ public class PeliculasDAO {
         db=conexion.getDatabase("peliculas");
     }
 
+    public void desconectarse(MongoClient conexion){
+        conexion.close();
+    }
+
+
+    //Working
     public void insertarPelicula(Pelicula pelicula) {
 
+        boolean busca=existeTitulo(pelicula.getTitulo());
 
-        if(existeTitulo(pelicula.getTitulo())){
-            //Llamamos a una coleccion, sino esta creada la creara.
+        if(busca==true){
+
+            AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Titulo", "El titulo que esta intentando añadir ya existe");
+
+        } else {
+
+            conectarse();
+
+            //Llamamos a una coleccion, si no esta creada la creara.
             MongoCollection<Document> collection = db.getCollection("peliculas");
 
-            Document documento = new Document()
-                    .append("titulo", pelicula.getTitulo())
-                    .append("genero", pelicula.getGenero())
-                    .append("cine", pelicula.getCine())
-                    .append("protagonista", pelicula.getProtagonista());
+            if (Validacion.noContieneNumeros(pelicula.getGenero())){
 
-            collection.insertOne(documento);
-            cargarPelis();
-        } else {
-            System.out.println("Eres un pringado");
+                Document documento = new Document()
+                        .append("titulo", pelicula.getTitulo())
+                        .append("genero", pelicula.getGenero())
+                        .append("cine", pelicula.getCine())
+                        .append("protagonista", pelicula.getProtagonista());
+
+
+                collection.insertOne(documento);
+                AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Pelicula", "La pelicula --> " + pelicula.getTitulo()+" ha sido añadida.");
+                desconectarse(conexion);
+                cargarPelis();
+
+            } else {
+
+                //Mostrar una alerta por si el campo genero tiene algun numero.
+                AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Genero", "El campo genero no puede contener ninguno numero o caracter especial.");
+            }
+
         }
-        
 
     }
 
+    //Working
     public void borrarPelicula(Pelicula peli){
 
         conectarse();
-        //Comprobamos si existe el genero
-        if (existeTitulo(peli.getTitulo())){
+
             //Obtenemos la coleccion por genero.
-            MongoCollection<Document> collection=db.getCollection("peliculas");
+            MongoCollection<Document> collection = db.getCollection("peliculas");
+
             //Creamos un filtro para encontrar la pelicula por el titulo.
-            Document filtroPeli=new Document("titulo", peli.getTitulo());
+            Document filtroPeli = new Document("titulo", peli.getTitulo());
 
             collection.deleteOne(filtroPeli);
-            System.out.println("sjkfdhlskgh fjsdfjglsdñkgjsdflkj");
-        } else {
-            System.out.println("Esto no fuciona pringado");
-        }
+            AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Borrar", "La pelicula " + peli.getTitulo() + " ha sido borrada con exito.");
+
     }
 
     public List<Pelicula> cargarPelis() {
@@ -99,19 +121,69 @@ public class PeliculasDAO {
 
     }
 
+    public void modificarPelicula(Pelicula pelicula) {
+
+        boolean busca=existeTitulo(pelicula.getTitulo());
+
+        if(busca==false){
+
+            AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Titulo", "El titulo que esta intentando modificar no existe");
+
+        } else {
+
+            conectarse();
+
+            //Llamamos a una coleccion, si no esta creada la creara.
+            MongoCollection<Document> collection = db.getCollection("peliculas");
+            // Creamos un filtro para encontrar la película por el título
+            Document filtroTitulo = new Document("titulo", pelicula.getTitulo());
+
+            if (Validacion.noContieneNumeros(pelicula.getGenero())){
+
+                Document nuevosDatos = new Document()
+                        .append("titulo", pelicula.getTitulo())
+                        .append("genero", pelicula.getGenero())
+                        .append("cine", pelicula.getCine())
+                        .append("protagonista", pelicula.getProtagonista());
+
+
+                collection.updateOne(filtroTitulo, new Document("$set", nuevosDatos));
+                AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Pelicula", "La pelicula --> " + pelicula.getTitulo()+" ha sido modificada.");
+                desconectarse(conexion);
+                cargarPelis();
+
+            } else {
+
+                //Mostrar una alerta por si el campo genero tiene algun numero.
+                AlertUtils.mostrarAlerta(Alert.AlertType.INFORMATION, "Genero", "El campo genero no puede contener ninguno numero o caracter especial.");
+            }
+
+        }
+
+    }
+
+
+
+
     public boolean existeTitulo (String titulo) {
+        conectarse();
+
         // Obtener la colección correspondiente al género
         MongoCollection<Document> collection = db.getCollection("peliculas");
 
-        // Obtener un cursor con todos los documentos de la colección
-        MongoCursor<Document> cursor = collection.find().iterator();
+        // Crear un filtro para encontrar documentos con el título específico
+        Document filtroTitulo = new Document("titulo", titulo);
 
-        // Verificar si hay al menos un documento en la colección
+        // Obtener un cursor con los documentos que coinciden con el filtro
+        MongoCursor<Document> cursor = collection.find(filtroTitulo).iterator();
+
+        // Verificar si hay al menos un documento que coincide con el título
         boolean existeTitulo = cursor.hasNext();
 
         // Cerrar el cursor para liberar recursos
         cursor.close();
 
+        desconectarse(conexion);
         return existeTitulo;
     }
 }
